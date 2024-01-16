@@ -39,6 +39,8 @@ add_executable (rigidBodyTutorial main.cpp
 		  ${util_HEADERS} ${util_SOURCE}
           ${viewer_HEADERS} ${viewer_SOURCE} )
 
+file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR})
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/polyscope)
 target_link_libraries(rigidBodyTutorial OpenGL::GL polyscope)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include 3rdParty/Eigen3/include/eigen3 ${COMMON_INCLUDES})

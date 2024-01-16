@@ -26,24 +26,23 @@ namespace
         Eigen::Vector3f(0.71f, 0, 0.71f),
         Eigen::Vector3f(0.71f, 0, -0.71f),
         Eigen::Vector3f(-0.71f, 0, 0.71f),
-        Eigen::Vector3f(-0.71f, 0, -0.71f)
-    };
+        Eigen::Vector3f(-0.71f, 0, -0.71f)};
 
-    static void updateRigidBodyMeshes(RigidBodySystem& _rigidBodySystem)
+    static void updateRigidBodyMeshes(RigidBodySystem &_rigidBodySystem)
     {
-        auto& bodies = _rigidBodySystem.getBodies();
-        for(unsigned int i = 0; i < bodies.size(); ++i)
-        { 
+        auto &bodies = _rigidBodySystem.getBodies();
+        for (unsigned int i = 0; i < bodies.size(); ++i)
+        {
             Eigen::Isometry3f tm = Eigen::Isometry3f::Identity();
             tm.linear() = bodies[i]->q.toRotationMatrix();
             tm.translation() = bodies[i]->x;
-            bodies[i]->mesh->setTransform( glm::make_mat4x4(tm.data()) );
+            bodies[i]->mesh->setTransform(glm::make_mat4x4(tm.data()));
         }
     }
 
-    static void updateContactPoints(RigidBodySystem& _rigidBodySystem)
+    static void updateContactPoints(RigidBodySystem &_rigidBodySystem)
     {
-        const auto& contacts = _rigidBodySystem.getContacts();
+        const auto &contacts = _rigidBodySystem.getContacts();
         const unsigned int numContacts = contacts.size();
         Eigen::MatrixXf contactP(numContacts, 3);
         Eigen::MatrixXf contactN(numContacts, 3);
@@ -55,18 +54,16 @@ namespace
         }
 
         auto pointCloud = polyscope::registerPointCloud("contacts", contactP);
-        pointCloud->setPointColor({ 1.0f, 0.0f, 0.0f });
+        pointCloud->setPointColor({1.0f, 0.0f, 0.0f});
         pointCloud->setPointRadius(0.005);
-        pointCloud->addVectorQuantity("normal", contactN)->setVectorColor({ 1.0f, 1.0f, 0.0f })->setVectorLengthScale(0.05f)->setEnabled(true);
-
+        pointCloud->addVectorQuantity("normal", contactN)->setVectorColor({1.0f, 1.0f, 0.0f})->setVectorLengthScale(0.05f)->setEnabled(true);
     }
 
 }
 
-SimViewer::SimViewer() : 
-    m_dt(0.0167f), m_subSteps(1),
-    m_paused(true), m_stepOnce(false),
-    m_rigidBodySystem()
+SimViewer::SimViewer() : m_dt(0.0167f), m_subSteps(1),
+                         m_paused(true), m_stepOnce(false),
+                         m_rigidBodySystem()
 {
 }
 
@@ -102,7 +99,6 @@ void SimViewer::start()
 
     // Show the window
     polyscope::show();
-
 }
 
 void SimViewer::drawGUI()
@@ -120,10 +116,12 @@ void SimViewer::drawGUI()
     ImGui::SliderFloat("Friction coeff.", &(m_rigidBodySystem->mu), 0.0f, 2.0f, "%.2f");
     ImGui::PopItemWidth();
 
-    if (ImGui::Button("Sphere on box")) {
+    if (ImGui::Button("Sphere on box"))
+    {
         createSphereOnBox();
     }
-    if (ImGui::Button("Marble box")) {
+    if (ImGui::Button("Marble box"))
+    {
         createMarbleBox();
     }
 }
@@ -132,20 +130,19 @@ void SimViewer::draw()
 {
     drawGUI();
 
-    if( !m_paused || m_stepOnce )
+    if (!m_paused || m_stepOnce)
     {
         // Step the simulation.
         // The time step dt is divided by the number of sub-steps.
         //
         const float dt = m_dt / (float)m_subSteps;
-        for(int i = 0; i < m_subSteps; ++i)
+        for (int i = 0; i < m_subSteps; ++i)
         {
             m_rigidBodySystem->step(dt);
         }
 
         updateRigidBodyMeshes(*m_rigidBodySystem);
         updateContactPoints(*m_rigidBodySystem);
-       
 
         // Clear step-once flag.
         m_stepOnce = false;
@@ -166,7 +163,6 @@ void SimViewer::createSphereOnBox()
     polyscope::view::resetCameraToHomeView();
 }
 
-void SimViewer::preStep(std::vector<RigidBody*>& _bodies)
+void SimViewer::preStep(std::vector<RigidBody *> &_bodies)
 {
-
 }
